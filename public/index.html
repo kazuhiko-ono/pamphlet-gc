@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DroneCap - コース戦略ドローン映像サービス</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- AOS (Animate On Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <style>
+        :root {
+            --primary-green: #1A4D2E;
+            --accent-gold: #C5A572;
+            --bg-beige: #F8F6F0;
+            --text-dark: #2C2C2C;
+        }
+
+        * {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴシック', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.8;
+            background-color: var(--bg-beige);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-green) 0%, rgba(26, 77, 46, 0.85) 100%),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900"><rect fill="%23F8F6F0" width="1440" height="900"/><path fill="%231A4D2E" opacity="0.05" d="M0 450C100 380 200 420 300 450C400 480 500 420 600 450C700 480 800 420 900 450C1000 480 1100 420 1200 450C1300 480 1400 420 1440 450V900H0Z"/></svg>');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: white;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            z-index: 10;
+            max-width: 900px;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+            letter-spacing: 0.05em;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            opacity: 0.95;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        .scroll-indicator svg {
+            width: 30px;
+            height: 30px;
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* Section Styling */
+        section {
+            padding: clamp(3rem, 10vw, 6rem) clamp(1.5rem, 5vw, 4rem);
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            font-weight: bold;
+            line-height: 1.4;
+            margin-bottom: 2rem;
+            color: var(--primary-green);
+        }
+
+        h3 {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary-green);
+        }
+
+        p {
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            margin-bottom: 1.5rem;
+            line-height: 2;
+        }
+
+        /* Problem & Solution Section */
+        .problem-solution {
+            background-color: white;
+        }
+
+        .problem-solution-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .problem-solution-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        .comparison-images {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-images {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .image-placeholder {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #888;
+            text-align: center;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-placeholder.conventional {
+            border: 2px solid #ddd;
+        }
+
+        .image-placeholder.strategy {
+            border: 3px solid var(--accent-gold);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 12px rgba(197, 165, 114, 0.3);
+        }
+
+        .image-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 0.75rem;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        .features-list {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .features-list li {
+            padding: 1rem 0 1rem 2.5rem;
+            position: relative;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .features-list li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .effect-box {
+            background: linear-gradient(135deg, var(--primary-green) 0%, rgba(26, 77, 46, 0.95) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        .effect-box h3 {
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .effect-box ul {
+            list-style: none;
+            space-y: 1rem;
+        }
+
+        .effect-box li {
+            padding: 0.75rem 0 0.75rem 2rem;
+            position: relative;
+        }
+
+        .effect-box li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Results & Pricing Section */
+        .results-pricing {
+            background: linear-gradient(180deg, white 0%, var(--bg-beige) 100%);
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-label {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        /* Pricing Table */
+        .pricing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .pricing-table th {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 1.25rem;
+            text-align: left;
+            font-weight: 600;
+            border: none;
+        }
+
+        .pricing-table td {
+            padding: 1.25rem;
+            border: none;
+            border-bottom: 1px solid #eee;
+        }
+
+        .pricing-table tbody tr:nth-child(odd) {
+            background-color: #fafaf8;
+        }
+
+        .pricing-table tbody tr:nth-child(even) {
+            background-color: white;
+        }
+
+        .pricing-table tbody tr:hover {
+            background-color: rgba(197, 165, 114, 0.08);
+            transition: background-color 0.3s ease;
+        }
+
+        .price-amount {
+            color: var(--primary-green);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .included-box {
+            background: var(--bg-beige);
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-gold);
+            margin-top: 2rem;
+        }
+
+        .included-box h4 {
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .included-box ul {
+            list-style: none;
+        }
+
+        .included-box li {
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .included-box li:before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: var(--primary-green);
+            color: white;
+            text-align: center;
+        }
+
+        .contact h2 {
+            color: white;
+        }
+
+        .contact p {
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .contact-info {
+            margin: 2rem 0;
+            font-size: 1.05rem;
+        }
+
+        .contact-info div {
+            margin-bottom: 1rem;
+        }
+
+        .contact-info a {
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            opacity: 0.8;
+        }
+
+        .company-info {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .safety-features {
+            background: rgba(0, 0, 0, 0.15);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        .safety-features h4 {
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .safety-features ul {
+            list-style: none;
+        }
+
+        .safety-features li {
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .safety-features li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        /* CTA Button */
+        .btn-cta {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background-color: var(--accent-gold);
+            color: var(--primary-green);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-gold);
+            margin-top: 1.5rem;
+            cursor: pointer;
+        }
+
+        .btn-cta:hover {
+            background-color: transparent;
+            color: var(--accent-gold);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(197, 165, 114, 0.3);
+        }
+
+        .btn-cta.white {
+            background-color: white;
+            color: var(--primary-green);
+            border-color: white;
+        }
+
+        .btn-cta.white:hover {
+            background-color: transparent;
+            color: white;
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 77, 46, 0.95);
+            color: white;
+            padding: 1rem 2rem;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: var(--accent-gold);
+        }
+
+        header nav a {
+            color: white;
+            margin-left: 2rem;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        header nav a:hover {
+            color: var(--accent-gold);
+        }
+
+        @media (max-width: 768px) {
+            header nav {
+                display: none;
+            }
+        }
+
+        /* Adjust section padding for fixed header */
+        body {
+            padding-top: 60px;
+        }
+
+        header {
+            height: 60px;
+        }
+
+        section:first-of-type {
+            margin-top: -60px;
+            padding-top: calc(6rem + 60px);
+        }
+
+        /* Utility */
+        .max-w-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-4 { margin-top: 1.5rem; }
+        .mb-4 { margin-bottom: 1.5rem; }
+
+    </style>
+</head>
+<body>
+
+<!-- Header Navigation -->
+<header>
+    <div class="logo">DroneCap</div>
+    <nav>
+        <a href="#hero">ホーム</a>
+        <a href="#problem">コンセプト</a>
+        <a href="#results">実績・料金</a>
+        <a href="#contact">お問い合わせ</a>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section id="hero" class="hero">
+    <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+        <h1>プレーヤーの思考を刺激する。<br>コース戦略が見える、新しい映像体験。</h1>
+        <p class="subtitle">ドローン×測量技術で実現する、ゴルフ場プロモーションの進化形</p>
+        <a href="#contact" class="btn-cta white">無料相談を申し込む</a>
+    </div>
+    <div class="scroll-indicator">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+    </div>
+</section>
+
+<!-- Problem & Solution Section -->
+<section id="problem" class="problem-solution">
+    <div class="max-w-container">
+        <div class="problem-solution-grid">
+            <!-- Left: Problem -->
+            <div data-aos="fade-right" data-aos-duration="800">
+                <h2>ただの空撮では、<br>コースの本当の魅力は伝わらない。</h2>
+                <p>多くのゴルフ場が導入する空撮映像。美しい俯瞰ショットは確かに魅力的です。</p>
+                <p>しかし、それだけでは<br>「このコースをどう攻めるのか」「どんな戦略的面白さがあるのか」は伝わりません。</p>
+                <p>プレーヤーが本当に知りたいのは、<strong>コースの"戦略性"</strong>です。</p>
+
+                <div class="comparison-images">
+                    <div>
+                        <div class="image-placeholder conventional">従来の空撮</div>
+                        <p class="image-label">美しいが戦略性は不明確</p>
+                    </div>
+                    <div>
+                        <div class="image-placeholder strategy">戦略映像</div>
+                        <p class="image-label">戦略的な魅力を伝える</p>
+                    </div>
+                </div>
+
+                <p>私たちが提供するのは、測量データとドローン映像を融合させた<strong>「コース戦略映像」という新しいカテゴリー</strong>。</p>
+                <p>ただ美しいだけでなく、プレーヤーの思考を刺激し、「このコースを回ってみたい」と思わせる映像です。</p>
+            </div>
+
+            <!-- Right: Solution -->
+            <div data-aos="fade-left" data-aos-duration="800">
+                <h2>精密な測量データが、<br>映像に「戦略性」を与える。</h2>
+
+                <ul class="features-list">
+                    <li><strong>📐 測量データに基づく正確な地形情報</strong><br>コースの高低差、傾斜を数値化し映像に統合</li>
+                    <li><strong>🎯 戦略的要素の可視化</strong><br>OBライン、ハザード、最適な落下地点を明示</li>
+                    <li><strong>🎤 プロによる戦略解説</strong><br>各ホールの攻め方を音声で丁寧に説明</li>
+                    <li><strong>📊 グリーンの傾斜グラフィック</strong><br>パッティングラインが読める傾斜情報を表示</li>
+                </ul>
+
+                <div class="effect-box">
+                    <h3>導入効果</h3>
+                    <ul>
+                        <li>ホームページの滞在時間向上</li>
+                        <li>初来場プレーヤーの不安解消</li>
+                        <li>SNSシェアによる自然な拡散</li>
+                        <li>コースブランド価値の向上</li>
+                        <li>会員向けプレミアムコンテンツとしても活用可能</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Results & Pricing Section -->
+<section id="results" class="results-pricing">
+    <div class="max-w-container">
+        <!-- Results -->
+        <div data-aos="fade-up" data-aos-duration="800">
+            <h2 class="text-center">導入実績</h2>
+            <p class="text-center">実際の制作映像サンプル</p>
+
+            <div class="video-grid">
+                <div data-aos="zoom-in" data-aos-duration="800">
+                    <div class="video-container">
+                        <iframe src="https://player.vimeo.com/video/996048547" allowfullscreen="" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+                    </div>
+                    <p class="video-label">No.2ホール - コース戦略映像</p>
+                </div>
+                <div data-aos="zoom-in" data-aos-duration="800" data-aos-delay="100">
+                    <div class="video-container">
+                        <iframe src="https://player.vimeo.com/video/996048952" allowfullscreen="" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+                    </div>
+                    <p class="video-label">No.3ホール - コース戦略映像</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing -->
+        <div style="margin-top: 4rem;" data-aos="fade-up" data-aos-duration="800">
+            <h2 class="text-center">シンプルで明確な料金体系</h2>
+
+            <table class="pricing-table">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">プラン</th>
+                        <th style="width: 40%;">内容</th>
+                        <th style="width: 30%; text-align: right;">料金</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>トライアル</strong></td>
+                        <td>3ホール</td>
+                        <td class="price-amount" style="text-align: right;">10万円</td>
+                    </tr>
+                    <tr>
+                        <td><strong>フルコース</strong></td>
+                        <td>18ホール完全版</td>
+                        <td class="price-amount" style="text-align: right;">150万円</td>
+                    </tr>
+                    <tr>
+                        <td><strong>フルコース<br>+Webサイト制作</strong></td>
+                        <td>18ホール完全版 + ホームページ制作・統合</td>
+                        <td class="price-amount" style="text-align: right;">170万円</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="included-box">
+                <h4>プランに含まれるもの</h4>
+                <ul>
+                    <li>ドローン撮影（4K）</li>
+                    <li>測量データ取得・解析</li>
+                    <li>戦略的音声解説制作</li>
+                    <li>グラフィック制作</li>
+                    <li>ホームページ掲載用データ納品</li>
+                    <li>1年間の映像修正対応</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact">
+    <div class="max-w-container">
+        <div data-aos="fade-up" data-aos-duration="800">
+            <h2>まずは無料相談から</h2>
+            <p>お客様のコースに最適なプランをご提案いたします。<br>撮影から納品まで、ワンストップで対応。</p>
+
+            <p style="margin-top: 2rem; font-weight: 600; font-size: 1.1rem;">【無料でご提供】<br>コース診断 / お見積もり</p>
+
+            <div class="contact-info">
+                <div>📞 TEL: <a href="tel:">お電話でお問い合わせ</a></div>
+                <div>✉️ MAIL: <a href="mailto:ono@flink-net.com">ono@flink-net.com</a></div>
+                <div>🌐 WEB: <a href="#">ウェブサイト</a></div>
+            </div>
+
+            <a href="mailto:ono@flink-net.com" class="btn-cta white">メールで問い合わせる</a>
+
+            <div class="company-info">
+                <p><strong>DroneCap（ドローンキャップ）</strong></p>
+                <p>運営：株式会社　エフリンク　ドローン事業部<br>担当代表：小野和彦</p>
+            </div>
+
+            <div class="safety-features">
+                <h4>安全への取り組み</h4>
+                <ul>
+                    <li>国土交通省認定ドローン操縦士</li>
+                    <li>賠償責任保険加入済み</li>
+                    <li>飛行許可・承認取得済み</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Initialize AOS
+    AOS.init({
+        duration: 800,
+        easing: 'ease-in-out-quad',
+        once: false,
+        offset: 100
+    });
+
+    // Smooth scroll for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href !== '#' && document.querySelector(href)) {
+                e.preventDefault();
+                document.querySelector(href).scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Update header on scroll
+    const header = document.querySelector('header');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 100) {
+            header.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+        } else {
+            header.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+        }
+    });
+</script>
+
+</body>
+</html>
