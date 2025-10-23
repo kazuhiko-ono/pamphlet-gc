@@ -863,6 +863,19 @@
             header.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
         }
     });
+
+    // Contact form submission handler
+    const contactForm = document.querySelector('form[name="contact"]');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            // Netlifyが処理するため、フォーム送信後に入力内容をクリア
+            setTimeout(() => {
+                contactForm.reset();
+                // 成功メッセージを表示（オプション）
+                alert('お問い合わせいただきありがとうございます。\n確認後、お電話またはメールにてご連絡させていただきます。');
+            }, 500);
+        });
+    }
 </script>
 
 </body>
