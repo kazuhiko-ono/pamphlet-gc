@@ -1,0 +1,23 @@
+{
+  "name": "dronecap-pamphlet",
+  "version": "1.0.0",
+  "description": "DroneCap - ゴルフ場向けコース戦略ドローン映像サービスのWebパンフレット",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "http-server public -p 8000 -o",
+    "build": "echo 'Static site, no build needed'",
+    "start": "http-server public -p 8000"
+  },
+  "keywords": [
+    "golf",
+    "drone",
+    "video",
+    "dronecap"
+  ],
+  "author": "DroneCap",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
