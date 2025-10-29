@@ -874,19 +874,20 @@
                 <div>🌐 WEB: <a href="https://flinkdrone.com/" target="_blank">https://flinkdrone.com/</a></div>
             </div>
 
-            <!-- Netlify Contact Form -->
-            <form name="contact" method="POST" netlify netlify-honeypot="bot-field" style="margin: 2rem 0; max-width: 500px; margin-left: auto; margin-right: auto;">
-                <input type="hidden" name="form-name" value="contact" />
+            <!-- SSGForm Contact Form -->
+            <form action="https://ssgform.com/s/JJZGLgL1nmml" method="POST" style="margin: 2rem 0; max-width: 500px; margin-left: auto; margin-right: auto;">
+                <!-- Honeypot (anti-spam) - hidden field -->
+                <input type="hidden" name="_gotcha" />
 
-                <!-- Honeypot (anti-spam) -->
-                <input type="hidden" name="bot-field" />
+                <!-- Form loaded time (time-based validation) -->
+                <input type="hidden" name="_form_loaded_at" id="form_loaded_at" />
 
                 <div style="margin-bottom: 1.5rem;">
-                    <label for="name" style="display: block; text-align: left; margin-bottom: 0.5rem; font-weight: 500;">ゴルフ場名</label>
+                    <label for="golfcourse" style="display: block; text-align: left; margin-bottom: 0.5rem; font-weight: 500;">ゴルフ場名</label>
                     <input
                         type="text"
-                        id="name"
-                        name="name"
+                        id="golfcourse"
+                        name="ゴルフ場名"
                         required
                         style="width: 100%; padding: 0.75rem; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 6px; background-color: rgba(255, 255, 255, 0.1); color: white; font-size: 1rem; transition: border-color 0.3s ease;"
                         placeholder="例：○○ゴルフクラブ"
@@ -900,7 +901,7 @@
                     <input
                         type="email"
                         id="email"
-                        name="email"
+                        name="メールアドレス"
                         required
                         style="width: 100%; padding: 0.75rem; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 6px; background-color: rgba(255, 255, 255, 0.1); color: white; font-size: 1rem; transition: border-color 0.3s ease;"
                         placeholder="example@golf-course.com"
@@ -914,7 +915,7 @@
                     <input
                         type="tel"
                         id="phone"
-                        name="phone"
+                        name="電話番号"
                         style="width: 100%; padding: 0.75rem; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 6px; background-color: rgba(255, 255, 255, 0.1); color: white; font-size: 1rem; transition: border-color 0.3s ease;"
                         placeholder="090-1234-5678"
                         onfocus="this.style.borderColor='var(--accent-gold)'"
@@ -926,7 +927,7 @@
                     <label for="message" style="display: block; text-align: left; margin-bottom: 0.5rem; font-weight: 500;">メッセージ</label>
                     <textarea
                         id="message"
-                        name="message"
+                        name="メッセージ"
                         required
                         rows="5"
                         style="width: 100%; padding: 0.75rem; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 6px; background-color: rgba(255, 255, 255, 0.1); color: white; font-size: 1rem; font-family: inherit; transition: border-color 0.3s ease; resize: vertical;"
@@ -939,7 +940,7 @@
                 <button
                     type="submit"
                     class="btn-cta white"
-                    style="width: 100%; border: none; font-size: 1.1rem; padding: 1.3rem 3rem;"
+                    style="width: 100%; border: none; font-size: 1.1rem; padding: 1.3rem 3rem; cursor: pointer;"
                 >
                     無料相談を申し込む
                 </button>
@@ -995,16 +996,39 @@
         }
     });
 
-    // Contact form submission handler
-    const contactForm = document.querySelector('form[name="contact"]');
+    // SSGForm Contact form submission handler
+    const contactForm = document.querySelector('form[action*="ssgform.com"]');
     if (contactForm) {
+        // Set form loaded time on page load
+        const formLoadedAtField = document.getElementById('form_loaded_at');
+        if (formLoadedAtField) {
+            formLoadedAtField.value = new Date().getTime();
+        }
+
+        // Validate form before submission (honeypot + time-based validation)
         contactForm.addEventListener('submit', function(e) {
-            // Netlifyが処理するため、フォーム送信後に入力内容をクリア
-            setTimeout(() => {
-                contactForm.reset();
-                // 成功メッセージを表示（オプション）
-                alert('お問い合わせいただきありがとうございます。\n確認後、お電話またはメールにてご連絡させていただきます。');
-            }, 500);
+            const gotchaField = contactForm.querySelector('input[name="_gotcha"]');
+            const formLoadedAt = document.getElementById('form_loaded_at').value;
+            const currentTime = new Date().getTime();
+            const timeDiff = (currentTime - parseInt(formLoadedAt)) / 1000; // Convert to seconds
+
+            // Check honeypot (should be empty)
+            if (gotchaField && gotchaField.value) {
+                e.preventDefault();
+                console.warn('Spam detected: honeypot field filled');
+                return false;
+            }
+
+            // Check time-based validation (should be more than 2 seconds)
+            if (timeDiff < 2) {
+                e.preventDefault();
+                alert('フォームの送信が速すぎます。もう一度お試しください。');
+                console.warn('Spam detected: form submitted too quickly');
+                return false;
+            }
+
+            // Form is valid, submission proceeds
+            console.log('Form passed spam validation. Time spent:', timeDiff, 'seconds');
         });
     }
 </script>
