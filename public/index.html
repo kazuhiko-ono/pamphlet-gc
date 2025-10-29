@@ -877,10 +877,10 @@
             <!-- SSGForm Contact Form -->
             <form action="https://ssgform.com/s/JJZGLgL1nmml" method="POST" style="margin: 2rem 0; max-width: 500px; margin-left: auto; margin-right: auto;">
                 <!-- Honeypot (anti-spam) - hidden field -->
-                <input type="hidden" name="_gotcha" />
+                <input type="text" name="_gotcha" style="display: none;" />
 
                 <!-- Form loaded time (time-based validation) -->
-                <input type="hidden" name="_form_loaded_at" id="form_loaded_at" />
+                <input type="hidden" name="_form_loaded_at" />
 
                 <div style="margin-bottom: 1.5rem;">
                     <label for="golfcourse" style="display: block; text-align: left; margin-bottom: 0.5rem; font-weight: 500;">ゴルフ場名</label>
@@ -996,40 +996,14 @@
         }
     });
 
-    // SSGForm Contact form submission handler
+    // SSGForm Contact form initialization
     const contactForm = document.querySelector('form[action*="ssgform.com"]');
     if (contactForm) {
-        // Set form loaded time on page load
-        const formLoadedAtField = document.getElementById('form_loaded_at');
+        // Set form loaded time when page loads
+        const formLoadedAtField = contactForm.querySelector('input[name="_form_loaded_at"]');
         if (formLoadedAtField) {
             formLoadedAtField.value = new Date().getTime();
         }
-
-        // Validate form before submission (honeypot + time-based validation)
-        contactForm.addEventListener('submit', function(e) {
-            const gotchaField = contactForm.querySelector('input[name="_gotcha"]');
-            const formLoadedAt = document.getElementById('form_loaded_at').value;
-            const currentTime = new Date().getTime();
-            const timeDiff = (currentTime - parseInt(formLoadedAt)) / 1000; // Convert to seconds
-
-            // Check honeypot (should be empty)
-            if (gotchaField && gotchaField.value) {
-                e.preventDefault();
-                console.warn('Spam detected: honeypot field filled');
-                return false;
-            }
-
-            // Check time-based validation (should be more than 2 seconds)
-            if (timeDiff < 2) {
-                e.preventDefault();
-                alert('フォームの送信が速すぎます。もう一度お試しください。');
-                console.warn('Spam detected: form submitted too quickly');
-                return false;
-            }
-
-            // Form is valid, submission proceeds
-            console.log('Form passed spam validation. Time spent:', timeDiff, 'seconds');
-        });
     }
 </script>
 
