@@ -582,6 +582,215 @@
         .mt-4 { margin-top: 1.5rem; }
         .mb-4 { margin-bottom: 1.5rem; }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 3rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background-color: var(--bg-beige);
+        }
+
+        .modal-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--accent-gold);
+        }
+
+        .modal-title h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--primary-green);
+        }
+
+        .company-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .company-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .company-name-en {
+            font-size: 1rem;
+            color: var(--accent-gold);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .business-unit {
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid var(--accent-gold);
+        }
+
+        .business-unit h4 {
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .business-unit p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        .concerns-section {
+            background: linear-gradient(135deg, rgba(26, 77, 46, 0.08) 0%, rgba(197, 165, 114, 0.08) 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .concerns-section h3 {
+            color: var(--primary-green);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .concerns-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .concerns-list li {
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .concerns-list li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        .cta-text {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        .modal-btn-cta {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: var(--primary-green);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-green);
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-btn-cta:hover {
+            background-color: transparent;
+            color: var(--primary-green);
+        }
+
+        .company-info-modal {
+            border-top: 2px solid #eee;
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            line-height: 1.8;
+        }
+
+        .company-info-modal div {
+            margin-bottom: 0.5rem;
+        }
+
+        .company-info-modal a {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .company-info-modal a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .modal-title h2 {
+                font-size: 1.5rem;
+            }
+
+            .company-name {
+                font-size: 1.2rem;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -949,6 +1158,14 @@
             <div class="company-info">
                 <p><strong>DroneCap（ドローンキャップ）</strong></p>
                 <p>運営：株式会社　エフリンク　ドローン事業部<br>担当代表：小野和彦</p>
+                <button
+                    onclick="openCompanyModal()"
+                    style="margin-top: 1.5rem; padding: 0.8rem 1.5rem; background-color: var(--accent-gold); color: var(--primary-green); border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.3s ease;"
+                    onmouseover="this.style.opacity='0.8'"
+                    onmouseout="this.style.opacity='1'"
+                >
+                    運営会社紹介
+                </button>
             </div>
 
             <div class="safety-features">
@@ -962,6 +1179,57 @@
         </div>
     </div>
 </section>
+
+<!-- Company Info Modal -->
+<div id="companyModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+
+        <div class="modal-title">
+            <h2>運営会社紹介</h2>
+        </div>
+
+        <div class="company-section">
+            <div class="company-name">株式会社エフリンク</div>
+            <div class="company-name-en">F-Link Corporation</div>
+
+            <div class="business-unit">
+                <h4>【空調工事事業】</h4>
+                <p>創業以来培ってきた空調設備工事の確かな技術で、オフィス・店舗・工場など、あらゆる空間の空調を最適化。設計・施工・メンテナンスまで、ワンストップで対応します。</p>
+            </div>
+
+            <div class="business-unit">
+                <h4>【ドローン映像事業】</h4>
+                <p>ゴルフ場・マリンスポーツ施設向けの戦略的ドローン映像制作サービス「DroneCap」を展開。測量技術とドローンを融合させた、次世代のプロモーション映像を提供しています。</p>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 2px solid #eee; margin: 2rem 0;">
+
+        <div class="concerns-section">
+            <h3>空調のお悩み、ありませんか？</h3>
+            <ul class="concerns-list">
+                <li>電気代が高騰して困っている</li>
+                <li>古い空調設備を更新したい</li>
+                <li>省エネ性能の高い設備に変えたい</li>
+                <li>定期メンテナンスを任せたい</li>
+            </ul>
+        </div>
+
+        <div class="cta-text">
+            <p>空調工事のプロフェッショナルが、<br>最適なソリューションをご提案します。</p>
+        </div>
+
+        <button class="modal-btn-cta" onclick="window.location.href='https://www.flink-com.info';">空調工事の相談をする</button>
+
+        <div class="company-info-modal">
+            <div><strong>所在地：</strong>〒[住所]</div>
+            <div><strong>TEL：</strong><a href="tel:08046814816">080-4681-4816</a></div>
+            <div><strong>MAIL：</strong><a href="mailto:info@flink-net.com">info@flink-net.com</a></div>
+            <div><strong>WEB：</strong><a href="https://www.flink-com.info" target="_blank">https://www.flink-com.info</a></div>
+        </div>
+    </div>
+</div>
 
 <script>
     // Initialize AOS
@@ -1034,6 +1302,44 @@
             return true;
         });
     }
+
+    // Company Info Modal functionality
+    const companyModal = document.getElementById('companyModal');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    // Function to open modal
+    function openCompanyModal() {
+        companyModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Function to close modal
+    function closeCompanyModal() {
+        companyModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close button click
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', closeCompanyModal);
+    }
+
+    // Close modal when clicking outside the modal content
+    companyModal.addEventListener('click', function(e) {
+        if (e.target === companyModal) {
+            closeCompanyModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeCompanyModal();
+        }
+    });
+
+    // Make openCompanyModal globally accessible for inline onclick
+    window.openCompanyModal = openCompanyModal;
 </script>
 
 </body>
