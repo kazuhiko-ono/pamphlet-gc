@@ -44,6 +44,9 @@
             color: var(--text-dark);
             line-height: 1.8;
             background-color: var(--bg-beige);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
 
         /* Hero Section */
@@ -576,16 +579,11 @@
         }
 
         /* Adjust section padding for fixed header */
-        body {
-            padding-top: 60px;
-        }
-
         header {
             height: 60px;
         }
 
         section:first-of-type {
-            margin-top: -60px;
             padding-top: calc(6rem + 60px);
         }
 
@@ -613,6 +611,7 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             animation: fadeIn 0.3s ease;
+            overflow-y: auto;
         }
 
         .modal.active {
@@ -1394,13 +1393,17 @@
     // Function to open modal
     function openCompanyModal() {
         companyModal.classList.add('active');
+        // Disable scroll while modal is open
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
         document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = scrollbarWidth + 'px';
     }
 
     // Function to close modal
     function closeCompanyModal() {
         companyModal.classList.remove('active');
         document.body.style.overflow = 'auto';
+        document.body.style.paddingRight = '0px';
     }
 
     // Close button click
